@@ -3,9 +3,22 @@ import Link from 'next/link';
 
 export default async function PostsPage() {
 
-  const posts = await prisma.post.findMany();
+  const posts = await prisma.post.findMany({
+    where: {
+      published: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+  // total number of posts in the database
   const postsCount = await prisma.post.count();
-  console.log(posts)
+  // Testing out findUnique(); doesn't do anything dw
+  const marioPost = await prisma.post.findUnique({
+    where: {
+      slug: "mario",
+    }
+  });
 
   return (
     <main className="flex flex-col items-center gap-y-5 pt-24 text-center">
