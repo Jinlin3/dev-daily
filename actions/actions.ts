@@ -13,6 +13,11 @@ export async function createPost(formData: FormData) {
       slug: (formData.get("title") as string).replace(/\s+/g, "-").toLowerCase(),
       content: formData.get("content") as string,
       published: true,
+      author: {
+        connect: {
+          email: "hellojjlin@gmail.com",
+        }
+      },
     }
   });
 

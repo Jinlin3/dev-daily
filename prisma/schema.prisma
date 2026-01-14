@@ -9,6 +9,13 @@ datasource db {
   provider = "sqlite"
 }
 
+model User {
+  id             Int    @id @default(autoincrement())
+  email          String @unique
+  hashedPassword String
+  posts          Post[]
+}
+
 model Post {
   id        Int      @id @default(autoincrement())
   title     String
@@ -17,4 +24,8 @@ model Post {
   published Boolean  @default(false)
   updatedAt DateTime @default(now()) @updatedAt
   createdAt DateTime @default(now())
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+
+  @@index(slug)
 }
