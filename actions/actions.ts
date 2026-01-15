@@ -16,8 +16,14 @@ export async function createPost(formData: FormData) {
         content: formData.get("content") as string,
         published: true,
         author: {
-          connect: {
-            email: "hellojjlin@gmail.com",
+          connectOrCreate: {
+            where: {
+              email: "hellojjlin@gmail.com"
+            },
+            create: {
+              email: "hellojjlin@gmail.com",
+              hashedPassword: "abcdefg",
+            },
           }
         },
       }
@@ -25,11 +31,8 @@ export async function createPost(formData: FormData) {
     // automatically refreshes posts page when this function is ran
     revalidatePath("/posts");
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
-      console.log(
-        `There is a unique constraint violation, a new user cannot be created with this email`
-      );
-    }
+    console.error("createPost failed:", e);
+    throw e;
   }
 }
 
