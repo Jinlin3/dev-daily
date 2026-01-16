@@ -3,12 +3,17 @@
 // This file defines server actions.
 
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 // Handles the creation of a post.
 export async function createPost(formData: FormData) {
   try {
+    // Check if title and content is actually filled out.
+    if (formData.get("title")?.toString().trim().length === 0 || formData.get("content")?.toString().trim().length === 0) {
+      throw new Error("Title or content is blank.");
+    }
+    // Otherwise create post.
     await prisma.post.create({
       data: {
         title: formData.get("title") as string,
@@ -32,7 +37,6 @@ export async function createPost(formData: FormData) {
     revalidatePath("/posts");
   } catch (e) {
     console.error("createPost failed:", e);
-    throw e;
   }
 }
 
@@ -50,8 +54,13 @@ export async function editPost(formData: FormData, id: number) {
 }
 
 // Handles deleting a post given an id.
-export async function deletePost(id: number) {
+export async function deletePost(formData: FormData) {
+  const slug = formData.get("slug")?.toString();
+  if (!slug) throw new Error("Missing slug");
   await prisma.post.delete({
-    where: { id },
+    where: {
+      slug
+    }
   });
+  redirect("/");
 }
