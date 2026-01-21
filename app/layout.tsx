@@ -28,9 +28,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header className="text-center font-bold text-3xl py-4">
+        <header className="text-center font-bold text-5xl py-4">
           <Link href="/">
-            Welcome to Jinlin3&apos;s Blog Page
+            Jinlin3&apos;s Blog Page
           </Link>
         </header>
         {children}

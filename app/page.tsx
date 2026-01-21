@@ -4,36 +4,31 @@ import Link from 'next/link';
 
 export default async function Home() {
 
-  const jj = await prisma.user.findUnique({
-    where: {
-      email: "hellojjlin@gmail.com",
-    },
+  // Allows the author's email to be fetched along with posts
+  const allPosts = await prisma.post.findMany({
     include: {
-      posts: true,
-    },
-  });
-
-  // total number of posts in the database
-  const jjPostsCount = await prisma.post.count({
-    where: {
       author: {
-        email: "hellojjlin@gmail.com",
-      },
+        select: {
+          email: true,
+        }
+      }
     }
   });
 
+  // total number of posts in the database
+  const postsCount = await prisma.post.count();
+
   return (
     <main className="flex flex-col items-center gap-y-5 pt-10 text-center">
-      <h1 className="text-3xl font-semibold">All of JJ's Posts ({jjPostsCount})</h1>
-      <ul className="border-t border-b border-black/10 py-5 leading-8">
-        {jj && jj.posts.map((post) => (
-          <li key={post.id} className="flex items-center justify-between px-5">
-            <Link href={`/${post.slug}`}>
-              {post.title}
-            </Link>
-          </li>
+      <h1 className="text-3xl font-semibold">All Posts ({postsCount})</h1>
+      <div className="border-t border-b border-black/10 grid grid-cols-3 gap-x-10 gap-y-10 mb-5 p-5 min-w-4xl min-h-80">
+        {allPosts && allPosts.map((post) => (
+          <Link href={`/${post.slug}`} key={post.id} className="p-5 bg-white rounded-2xl flex flex-col items-center justify-center hover:shadow-md">
+            <div>{post.title}</div>
+            <div className="italic">by {post.author.email}</div>
+          </Link>
         ))}
-      </ul>
+      </div>
 
       <form action={createPost} className="flex flex-col gap-y-2 w-96">
         <input
