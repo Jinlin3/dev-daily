@@ -99,3 +99,10 @@ export async function deletePost(formData: FormData) {
   // redirects to home page
   redirect("/");
 }
+
+export async function submitValue(formData: FormData) {
+  const jobApplications = Number(formData.get("job-applications"));
+  const leetcodeProblems = Number(formData.get("leetcode"));
+  const projectHours = Number(formData.get("project-hours"));
+  console.log(`Submitted values: ${jobApplications}, ${leetcodeProblems}, ${projectHours}`);
+}
