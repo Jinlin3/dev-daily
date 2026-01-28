@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { submitValue } from "@/actions/actions";
+import { submitGoals } from "@/actions/actions";
 
 export default function GoalsForm() {
   const [jobs, setJobs] = useState(5);
@@ -9,7 +9,7 @@ export default function GoalsForm() {
   const [projectHours, setProjectHours] = useState(5);
 
   return (
-    <form className="min-w-100 max-w-175 flex flex-col" action={submitValue}>
+    <form className="min-w-100 max-w-175 flex flex-col" action={submitGoals}>
       <label htmlFor="job-applications">
         Job Applications: <strong>{jobs}</strong>
       </label>

@@ -12,7 +12,7 @@ CS majors have it rough right now, especially in this market. This tracker helps
   - Yellow = partially met
   - Red = missed
 ## To-Do
-- Change schema.prisma to match the daily goals (should be just posts I think)
-- Create new entry creation form with sliders
+- Change schema.prisma to match the daily goals (should be just posts I think) ✅
+- Create new entry creation form with sliders ✅
 - Handle entry creation with server actions
 - TBD...

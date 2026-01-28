@@ -1,51 +1,85 @@
-import { createPost } from '@/actions/actions';
 import { prisma } from '@/lib/prisma';
-import Link from 'next/link';
 import { auth } from '@/auth';
-import PostForm from '@/components/post-form';
+import EntryForm from '@/components/entry-form';
 
 export default async function Home() {
 
   const session = await auth();
   const email = session?.user?.email;
-  const name = session?.user?.name;
-  const display = name ? name : email;
 
-  // Allows the author's email to be fetched along with posts
-  const allPosts = await prisma.post.findMany({
-    include: {
-      author: {
-        select: {
-          email: true,
-          name: true,
-        }
-      }
+  if (!email) {
+    return (
+      <main className="flex flex-col items-center gap-y-5 pt-10 text-center">
+        <h1 className="text-lg italic">Please sign in to log your progress.</h1>
+      </main>
+    );
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      name: true,
+      email: true,
     }
   });
 
-  // total number of posts in the database
-  const postsCount = await prisma.post.count();
+  if (!user) {
+    console.log(session);
+    return (
+      <main className="flex flex-col items-center gap-y-5 pt-10 text-center">
+        <h1 className="text-lg italic">User not found.</h1>
+      </main>
+    );
+  }
+  const userId = user.id;
+
+  // Find all of the posts of the user signed in
+  const [entries, goals] = await Promise.all([
+    prisma.entry.findMany({
+      where: { userId },
+      orderBy: { date: "desc" },
+    }),
+    prisma.goals.findUnique({
+      where: { userId },
+    }),
+  ]);
+
+  const entryCount = entries.length;
+  const display = user?.name ?? user?.email;
 
   return (
     <main className="flex flex-col items-center gap-y-5 pt-10 text-center">
 
-      <h1 className="text-3xl font-semibold">All Posts ({postsCount})</h1>
-
-      <div className="border-t border-b border-black/10 grid grid-cols-3 gap-x-10 gap-y-10 mb-5 p-5 min-w-4xl min-h-80">
-        {allPosts && allPosts.map((post) => (
-          <Link href={`/${post.slug}`} key={post.id} className="p-5 bg-white rounded-2xl flex flex-col items-center justify-center hover:shadow-md min-h-40">
-            <div className="font-semibold">{post.title}</div>
-            <div className="italic">by {post.author.name ?? post.author.email ?? "Anonymous"}</div>
-          </Link>
-        ))}
+      <div>
+        <div className="font-bold">Current Goals for {user.email}:</div>
+        <div>Job Applications: {goals?.applications ?? "—"}</div>
+        <div>Leetcode Problems: {goals?.leetcode ?? "—"}</div>
+        <div>Project Hours: {goals?.projectHours ?? "—"}</div>
       </div>
-
-      {email ? (
-        <PostForm />
-      ) : (
-        <div className="text-lg italic">Sign in to create a post.</div>
-      )}
       
+      {goals ? (
+        <EntryForm />
+      ) : (
+        <div className="text-lg italic">Please set your goals to log your progress.</div>
+      )}
+
+      {entryCount > 0 && (
+        <>
+          <h1 className="text-3xl font-semibold">Submission History</h1>
+          <div className="border-t border-b border-black/10 flex flex-col w-full max-w-3xl">
+            {entries.map((entry) => (
+              <div key={entry.id} className="flex flex-col">
+                <span>Date: {new Date(entry.date).toDateString()}</span>
+                <span>Job Applications: {entry.applications}</span>
+                <span>Leetcode Problems: {entry.leetcode}</span>
+                <span>Project Hours: {entry.projectHours}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
     </main>
   );
 }
