@@ -15,7 +15,7 @@ export default async function Navbar() {
         { /* Left Side */ }
         <div className="w-1/2 flex items-center justify-start gap-x-10">
           <Link href="/" className="text-2xl font-semibold">
-            Dev Daily
+            Daily Commit
           </Link>
           <Link href="/goals">
             Edit Goals
@@ -24,7 +24,7 @@ export default async function Navbar() {
         { /* Right Side */ }
         <div className="w-1/2 flex justify-end">
           {email ? (
-            <SignOut />
+            <SignOut display={display} />
           ) : (
             <SignIn />
           )}

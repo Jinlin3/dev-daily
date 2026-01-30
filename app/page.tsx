@@ -50,10 +50,6 @@ export default async function Home() {
 
   return (
     <main className="flex flex-col items-center gap-y-10 pt-10 text-center">
-
-      <div>
-        <div className="font-bold">{user.email}</div>
-      </div>
       
       {goals ? (
         <EntryForm goals={goals} />

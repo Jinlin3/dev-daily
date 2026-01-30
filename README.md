@@ -15,6 +15,7 @@ CS majors have it rough right now, especially in this market. This tracker helps
 - Change schema.prisma to match the daily goals (should be just posts I think) ✅
 - Create new entry creation form with sliders ✅
 - Handle entry creation with server actions ✅
-- Rename to "Daily Commit"
-- Beautify UI
+- Rename to "Daily Commit" ✅
+- Allow the graceful deletion of entries
 - Search up friends and see their history???
+- Make the UI beautiful

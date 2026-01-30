@@ -39,9 +39,16 @@ export async function submitEntry(formData: FormData) {
   const leetcode = Number(formData.get("leetcode"));
   const projectHours = Number(formData.get("project-hours"));
 
+  const clientDate = formData.get("client-date") as string;
+  if (typeof clientDate !== "string") {
+    throw new Error("Missing client date.");
+  }
+
   // Store midnight for today's date to avoid multiple entries on the same day.
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = new Date(clientDate);
+  if (isNaN(today.getTime())) {
+    throw new Error("Invalid client date.");
+  }
 
   // Upsert the entry for today
   const entry = await prisma.entry.upsert({
