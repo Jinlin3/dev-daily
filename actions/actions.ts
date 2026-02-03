@@ -24,6 +24,38 @@ export async function requireUser() {
   return user; // { id, name, email }
 }
 
+// Generates a unique slug from an email address
+export async function slugFromEmail(email: string) {
+  // Lowercase, trim
+  const lower = email.trim().toLowerCase();
+
+  // Take everything before the "@" symbol
+  const localPart = lower.split("@")[0];
+
+  // Remove "+" aliases
+  const withoutPlus = localPart.split("+")[0];
+
+  // Sanitize for URL
+  const baseSlug = withoutPlus
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  // If you somehow end up with empty (edge case)
+  const base = baseSlug || "user";
+
+  let candidate = base;
+  let count = 1;
+
+  // Keeps incrementing until unique slug is found
+  while (await prisma.user.findUnique({ where: { slug: candidate } })) {
+    count += 1;
+    candidate = `${base}-${count}`;
+  }
+
+  return candidate;
+}
+
 // Handles submission of entry form
 export async function submitEntry(formData: FormData) {
   // Handle session and get user
