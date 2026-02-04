@@ -1,93 +1,17 @@
-import { prisma } from '@/lib/prisma';
-import { auth } from '@/auth';
-import EntryForm from '@/components/entry-form';
+import Link from "next/link";
 
-export default async function Home() {
-
-  const session = await auth();
-  const email = session?.user?.email;
-
-  if (!email) {
-    return (
-      <main className="flex flex-col items-center gap-y-5 pt-10 text-center">
-        <h1 className="text-lg italic">Please sign in to log your progress.</h1>
-      </main>
-    );
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-    }
-  });
-
-  if (!user) {
-    console.log(session);
-    return (
-      <main className="flex flex-col items-center gap-y-5 pt-10 text-center">
-        <h1 className="text-lg italic">User not found.</h1>
-      </main>
-    );
-  }
-  const userId = user.id;
-
-  // Find all of the posts of the user signed in
-  const [entries, goals] = await Promise.all([
-    prisma.entry.findMany({
-      where: { userId },
-      orderBy: { date: "desc" },
-    }),
-    prisma.goals.findUnique({
-      where: { userId },
-    }),
-  ]);
-
-  const entryCount = entries.length;
-  const display = user?.name ?? user?.email;
-
+export default function Home() {
   return (
-    <main className="flex flex-col items-center gap-y-10 pt-10 text-center">
-      
-      {goals ? (
-        <EntryForm goals={goals} />
-      ) : (
-        <div className="text-lg italic">Please set your goals to log your progress.</div>
-      )}
-
-      {entryCount > 0 && (
-        <div className="mb-10 w-full max-w-2xl">
-          <h1 className="text-3xl font-semibold mb-5">Your History</h1>
-          <div className="flex flex-col divide-y divide-black/10">
-            {entries.map((entry) => {
-              const hits = [
-                entry.applications >= goals!.applications,
-                entry.leetcode >= goals!.leetcode,
-                entry.projectHours >= goals!.projectHours,
-              ];
-              const hitCount = hits.filter(Boolean).length;
-              let bgClass = "bg-red-300";
-              if (hitCount === hits.length) {
-                bgClass = "bg-green-300";
-              } else if (hitCount > 0) {
-                bgClass = "bg-yellow-200";
-              }
-            
-              return (
-                <div key={entry.id} className={`flex flex-col py-2 gap-y-1 px-4 rounded-sm ${bgClass}`}>
-                  <span className="italic">Date: {new Date(entry.date).toLocaleDateString()}</span>
-                  <span>Job Applications: {entry.applications}</span>
-                  <span>Leetcode Problems: {entry.leetcode}</span>
-                  <span>Project Hours: {entry.projectHours}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
+    <main className="flex flex-col items-center gap-y-5 pt-10 text-center">
+      <h1 className="text-3xl font-bold">Welcome to Daily Commit!</h1>
+      <p className="text-lg italic max-w-150">Struggling to find a SWE job? Having trouble sticking to the grind? Well this app is for you! This will help you set and track daily goals to improve your productivity and job search efforts.</p>
+      <ol className="list-decimal list-inside max-w-150 space-y-3">
+        <li className="text-md">Sign in with Google to get started!</li>
+        <li className="text-md">Set your daily goals in the <Link className="italic font-semibold" href="/goals">Edit Goals</Link> section!</li>
+        <li className="text-md">Track your progress each day on your <span className="italic font-semibold">User Page</span>!</li>
+        <li className="text-md">Check your history to see your progress over time!</li>
+        <li className="text-md">Look up other users' progress in the <Link className="italic font-semibold" href="/users">Users</Link> section!</li>
+      </ol>
     </main>
   );
 }

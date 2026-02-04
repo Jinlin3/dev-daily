@@ -2,12 +2,11 @@ import Link from "next/link";
 import SignIn from "./sign-in";
 import { auth } from "@/auth";
 import SignOut from "./sign-out";
+import { requireUser } from "@/actions/actions";
 
 export default async function Navbar() {
-  const session = await auth();
-  const email = session?.user?.email;
-  const name = session?.user?.name;
-  const display = name ? name : email;
+  const user = await requireUser();
+  const display = user ? user.slug : null;
 
   return (
     <header className="bg-gray-800 p-4 text-white">
@@ -17,17 +16,22 @@ export default async function Navbar() {
           <Link href="/" className="text-2xl font-semibold">
             Daily Commit
           </Link>
+          {user && (
+            <Link href={`/users/${user.slug}`}>
+              {display}
+            </Link>
+          )}
+          <Link href="/users">
+            Search Users
+          </Link>
           <Link href="/goals">
             Edit Goals
-          </Link>
-          <Link href="/tutorial">
-            How to Use
           </Link>
         </div>
         { /* Right Side */ }
         <div className="w-1/2 flex justify-end">
-          {email ? (
-            <SignOut display={display} />
+          {user ? (
+            <SignOut />
           ) : (
             <SignIn />
           )}

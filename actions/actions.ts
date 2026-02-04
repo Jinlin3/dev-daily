@@ -7,20 +7,26 @@ import { redirect } from "next/navigation";
 
 // Simple helper function to get the current user or throw an error
 export async function requireUser() {
+  // Is user signed in right now?
   const session = await auth();
   const email = session?.user?.email;
   if (!email) return null;
 
+  // Does the user exist in the database?
   const user = await prisma.user.findUnique({
     where: { email },
     select: {
       id: true,
       name: true,
       email: true,
+      slug: true,
     }
   });
 
+  // If not, throw error
   if (!user) throw new Error("User not found.");
+
+  // Otherwise, return user
   return user; // { id, name, email }
 }
 

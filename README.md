@@ -17,15 +17,15 @@ CS majors have it rough right now, especially in this market. This tracker helps
 - Handle entry creation with server actions ✅
 - Rename to "Daily Commit" ✅
 - Allow the graceful deletion of entries
-- Search up friends and see their history???
-  - I need to change the navigation of the website.
+- Search up friends and see their history??? ✅
+  - I need to change the navigation of the website. ✅
 - Make the UI beautiful
   - Change font ✅
   - Change color scheme
   - Change navbar
 ## Navigation
 - Home (Welcome Page? Maybe put tutorial in here.)
-  - Search User Page
-    - If your email matches the searched user's email, insert the entry form
-  - Edit Goals
   - "Username" - Navigate to your User Page
+  - Search User Page (Search users here.)
+    - [slug] - Dynamic Routing for users' slugs
+  - Edit Goals

@@ -1,10 +1,6 @@
 import { signOut } from "@/auth";
 
-type SignOutProps = {
-  display?: string | null;
-};
-
-export default function SignOut({ display }: SignOutProps) {
+export default function SignOut() {
   return (
     <form
       action={async () => {
@@ -13,7 +9,7 @@ export default function SignOut({ display }: SignOutProps) {
       }}
     >
       <button className="cursor-pointer">
-        {display}
+        Sign Out
       </button>
     </form>
   );
